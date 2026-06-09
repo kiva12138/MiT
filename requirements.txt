@@ -1,0 +1,25 @@
+# MiT was developed against transformers 4.35.x. The model re-implements the
+# LLaMA attention/decoder/model forward passes of THAT version (it relies on
+# `transformers.modeling_attn_mask_utils._prepare_4d_causal_attention_mask`,
+# the `config._flash_attn_2_enabled` flag, and the legacy tuple KV-cache), so
+# newer transformers (>=4.36, which switched to the `Cache` API) will NOT work.
+transformers==4.35.2
+tokenizers>=0.14,<0.15
+sentencepiece>=0.1.99
+huggingface_hub<0.20
+safetensors>=0.4.0
+
+torch>=2.0
+torchvision>=0.15
+
+# Vision / data
+Pillow>=9.0
+numpy>=1.23
+scikit-image>=0.19
+pycocotools>=2.0
+matplotlib>=3.5
+
+# Training utilities
+monai>=1.2          # DiceCELoss
+tensorboard>=2.10   # SummaryWriter
+scikit-learn>=1.0
