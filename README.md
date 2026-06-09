@@ -132,7 +132,7 @@ standard [`refer`](https://github.com/lichengunc/refer) API
 > **📦 One-click data download.** We provide a single pre-packaged archive that
 > contains everything below (COCO train2014 images, SAIAPR TC-12 images, and all
 > `refs(*).p` / `instances.json` annotations) — just download, extract into
-> `./data`, and you are ready to train. **Download: [MiT referring-segmentation data](DOWNLOAD_URL_HERE)**
+> `./data`, and you are ready to train. **Download: [MiT referring-segmentation data (code: 7890)](https://pan.baidu.com/s/1W5v9mviK3D-UsV8uTfLlMQ?pwd=7890)**
 
 ### 4.1 Directory layout
 
