@@ -129,6 +129,11 @@ This codebase uses the **referring image segmentation** datasets through the
 standard [`refer`](https://github.com/lichengunc/refer) API
 ([`refer.py`](refer.py) + [`ReferDataset.py`](ReferDataset.py)).
 
+> **📦 One-click data download.** We provide a single pre-packaged archive that
+> contains everything below (COCO train2014 images, SAIAPR TC-12 images, and all
+> `refs(*).p` / `instances.json` annotations) — just download, extract into
+> `./data`, and you are ready to train. **Download: [MiT referring-segmentation data](DOWNLOAD_URL_HERE)**
+
 ### 4.1 Directory layout
 
 Point `Data_path` in [`Config.py`](Config.py) to a root folder organized as
@@ -151,10 +156,13 @@ the SAIAPR TC-12 images.
 │   ├── instances.json
 │   ├── refs(umd).p             # splitBy = umd
 │   └── refs(google).p          # splitBy = google
-└── refclef/                    # optional; needs the saiapr_tc-12/ images (not the COCO ones)
-    ├── instances.json
-    ├── refs(unc).p
-    └── refs(berkeley).p
+├── refclef/
+│   ├── instances.json
+│   ├── refs(unc).p
+│   └── refs(berkeley).p
+└── saiapr_tc-12/               # SAIAPR TC-12 images for RefCLEF (folders 00..40, *.jpg)
+    ├── 00/images/*.jpg
+    └── ...
 ```
 
 The actual layout bundled in this repository (`Data_path = ./data`) is:
@@ -162,6 +170,7 @@ The actual layout bundled in this repository (`Data_path = ./data`) is:
 ```
 data/
 ├── COCOtrain2014/                 # COCO train2014 images (*.jpg)
+├── saiapr_tc-12/                  # SAIAPR TC-12 images for RefCLEF (folders 00..40)
 ├── refclef/
 │   ├── instances.json
 │   ├── refs(berkeley).p
@@ -234,6 +243,7 @@ On the bundled data this produces, for example:
 | RefCOCO (unc)  | 3811 | 1500 | 10834 | 0 missing / 0 empty / 0 mismatch |
 | RefCOCO+ (unc) | 3805 | 1500 | 10758 | 0 missing / 0 empty / 0 mismatch |
 | RefCOCOg (umd) | 2573 | 1300 |  4896 | 0 missing / 0 empty / 0 mismatch |
+| RefCLEF (unc)  | 9970 | 2000 | 12029 | 0 missing / 0 empty / 0 mismatch |
 
 <p align="center">
   <img src="images/data_samples_refcoco_unc_val.png" alt="RefCOCO samples" width="55%">
