@@ -19,34 +19,36 @@ This repository contains the **referring image segmentation** instantiation of M
 
 Instead of treating visual embeddings as extra tokens (which makes self-attention
 cost grow quadratically), MiT **infuses** a global image representation
-`I ∈ R^{d_I}` (from a frozen CLIP encoder) into selected LLaMA layers in a
+$I \in \mathbb{R}^{d_I}$ (from a frozen CLIP encoder) into selected LLaMA layers in a
 **linear** manner. For each infused layer:
 
 1. **K / V infusion (self-attention).** The image feature is mapped into the
-   text space by a *multiply* transform (`I_d`) and an *add* transform (`I_a`),
+   text space by a *multiply* transform ($I_d$) and an *add* transform ($I_a$),
    then fused element-wise into the textual key/value (paper Eq. 1–3):
 
-   ```
-   V'_t = V_t · I^v_d + I^v_a
-   K'_t = K_t · I^k_d + I^k_a
-   ```
+$$
+V'_t = V_t \odot I^v_d + I^v_a, \qquad K'_t = K_t \odot I^k_d + I^k_a
+$$
 
 2. **Adaptive head-wise rescaling.** To stabilize fusion across heads with
-   heterogeneous statistics, a learnable per-head vector `L` is combined with the
+   heterogeneous statistics, a learnable per-head vector $L$ is combined with the
    cosine similarity between the text value and the image feature, then gated by a
    sigmoid (paper Eq. 4–5):
 
-   ```
-   L' = L + cos_sim(V_t, I)
-   V^r_t = V'_t · σ(L')      K^r_t = K'_t · σ(L')
-   ```
+$$
+L' = L + \frac{V_t \cdot I}{\lVert V_t \rVert \, \lVert I \rVert}
+$$
+
+$$
+V^r_t = V'_t \odot \sigma(L'), \qquad K^r_t = K'_t \odot \sigma(L')
+$$
 
 3. **Feed-forward infusion.** The image feature also modulates the FFN block
    (paper Eq. 7):
 
-   ```
-   H'_t = H_t · F_f(I)
-   ```
+$$
+H'_t = H_t \odot F_f(I) = H_t \odot (I W_f + b_f)
+$$
 
 The **last-token** hidden state of the decoder-only LLM is taken as the infused
 text representation and, together with multi-level CLIP feature maps, is fed to a
@@ -59,9 +61,9 @@ the learnable head vectors, and the decoder are trainable.
 
 | Paper component | Code |
 | --- | --- |
-| K/V multiply / add transforms (`I_d`, `I_a`) | `fc_embedding_km/vm`, `fc_embedding_kp/vp` in [`Model.py`](Model.py) |
-| Adaptive head-wise rescaling `σ(L + cos_sim)` | `custom_llama_attention_forward` in [`Model.py`](Model.py) |
-| Feed-forward infusion `H_t · F_f(I)` | `custom_llama_mlp_forward` in [`Model.py`](Model.py) |
+| K/V multiply / add transforms ($I_d$, $I_a$) | `fc_embedding_km/vm`, `fc_embedding_kp/vp` in [`Model.py`](Model.py) |
+| Adaptive head-wise rescaling $\sigma(L + \mathrm{cossim})$ | `custom_llama_attention_forward` in [`Model.py`](Model.py) |
+| Feed-forward infusion $H_t \odot F_f(I)$ | `custom_llama_mlp_forward` in [`Model.py`](Model.py) |
 | Last-token pooling | `LLamaCustom.forward` in [`Model.py`](Model.py) |
 | Lightweight decoder | [`DecoderTF.py`](DecoderTF.py) (default, CLIPSeg/FiLM style) and [`DecoderCNN.py`](DecoderCNN.py) (U-Net style) |
 
